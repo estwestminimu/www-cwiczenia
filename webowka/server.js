@@ -20,20 +20,20 @@ app.get(`/users`, (req, res) =>
 
     db.all(`SELECT * FROM users`, (err, rows) => {
         if (err) {
-            res.status(500).json(
+            return res.status(500).json( //Błąd 1 - nic nie zwracało
                 {
                     "error :(": err.message
                 })
         }
         if (!rows) {
-            res.status(404).json(
+            return res.status(404).json( //Błąd 2 - nic nie zwracało
                 {
                     "message": "No users found"
                 })
         }
+        return res.json(rows) // return był poza pętlą lol
     });
 
-    return res.json(res)
 
 
 
@@ -41,42 +41,42 @@ app.get(`/users`, (req, res) =>
 
 //async function addUser() {
 
-app.post("/addUser", (req, res) => {
-    const { name, email } = request.body;
+app.post("/users", (req, res) => {
+    const { name, email } = req.body; //request zmieniono na req
 
     //obsługa błędnych danych
     if (!name || !email) {
-        req.status(404).json({ "error": "Lack of name or email. Two parameters are required" })
+        //dodano return
+        return  res.status(400).json({ "error": "Lack of name or email. Two parameters are required" })
     }
 
 
     const sqlRequest = "INSERT INTO users (name, email) VALUES (?,?)"
     // db.all("INSERT INTO users (name, email) VALUES (?,?,)", [name, email], err
 
-    db.run(sqlRequest, [name, email], err)
+    db.run(sqlRequest, [name, email], (err) => 
     {
 
         if (err) 
         {
-            return res.status(500).json
-            ({
+            return res.status(500).json({
                 "error :(": err.message
             })
         }
-        res.status(200).json
-        ({
+        return res.status(200).json({
             message: "Użytkownik dodany"
         })
-    }
+    })
 })
 //async function getUserById() {
 
 
-app.get(`/getUserById`, (req, res) =>
+app.get(`/getUserById/:id`, (req, res) => //braowało id
 //error idzie pierwszy
 {
+    const { id } = req.params //bo nie bylo id w parametrze pobrany,
     const sqlRequest = "SELECT * FROM users WHERE id = ?"
-    db.get(sqlRequest, [id], (err, rows) => {
+    db.get(sqlRequest, [id], (err, row) => { //literowka z rows na row
         if (err) 
         {
             return res.status(500).json
@@ -84,16 +84,16 @@ app.get(`/getUserById`, (req, res) =>
                 "error :(": err.message  
             })
         }
-        if (!rows) 
+        if (!row) 
         {
-        res.status(404).json
+        return res.status(404).json
         ({
         "message": "User of id" + id + "not found"
         })
         }
+        return res.status(200).json(row) //znowu poza funkcja
     });
 
-    return res.status(200).json(res)
 })
 
 app.listen(port)
