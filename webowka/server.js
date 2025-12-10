@@ -71,11 +71,11 @@ app.post("/users", (req, res) => {
 //async function getUserById() {
 
 
-app.get(`/getUserById/:id`, (req, res) => //braowało id
+app.get("/users/:id", (req, res) => //braowało id
 //error idzie pierwszy
 {
     const { id } = req.params //bo nie bylo id w parametrze pobrany,
-    const sqlRequest = "SELECT * FROM users WHERE id = ?"
+    const sqlRequest = "SELECT * FROM users WHERE id = ?"
     db.get(sqlRequest, [id], (err, row) => { //literowka z rows na row
         if (err) 
         {
