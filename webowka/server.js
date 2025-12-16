@@ -17,9 +17,6 @@ const port = 3000; // nasłuchujemy na port 3000
 app.use(express.json())
 
 
-/* * domek
-*
-*/
 
 
 //udostępnia pliki z folderu public
@@ -27,12 +24,22 @@ app.use(express.json())
 //_dirname to pelna sciezka do katalogu
 // express static udostepnia pliki statyczne - html css i js z podanego katalogu
 // app.use dodaje middleware do całej aplikacji
+
+//gotwowy plik z dysku
 app.use(express.static(path.join(__dirname, "public")))
 
-
 //middleware ma next
+
+
+/*
+path.join(...)
+- Bezpiecznie łączy ścieżki (działa na Windows / Linux / Mac)
+- Unika problemów typu C:\...\public vs /home/.../public
+*/
+
+
 // nie ma nextka wiec jest koncowy
-app.get(`/users`, (req, res) =>
+app.get('/users', (req, res) =>
 //error idzie pierwszy
 {
     //db all pobiera wszystkie rekordy
@@ -56,7 +63,7 @@ app.get(`/users`, (req, res) =>
                 })
         }
         //domyslnie ustawia status 200 ok
-        return res.json(rows) // return był poza pętlą lol
+        return res.json(rows) 
     });
 
 
@@ -68,19 +75,23 @@ app.post("/users", (req, res) => {
 
     // PObieramy dane z body otrzymany z app.js
     /*
-    const { name, email } = req.body? A: To destrukturyzacja. Zamiast pisać wszędzie req.body.name i req.body.email, wyciągasz te zmienne raz. Jest to czystsze i bardziej czytelne.
+    const { name, email } = req.body? A: To destrukturyzacja.
+     Zamiast pisać wszędzie req.body.name i req.body.email,
+      wyciągasz te zmienne raz.
+       Jest to czystsze i bardziej czytelne.
     */
     const { name, email } = req.body;
 
-    //Puste dane
     if (!name || !email) {
-        //dodano return
-        return res.status(400).json({ "error": "Lack of name or email. Two parameters are required" })
+        return res.status(400).json({ "error": " Two parameters" })
     }
 
     //pytajniki mówią o tym, że nie dojdzie do sqlinjection
     //Najpierw parsuje się sql a potem podstawia dane jako zwykły tekst a nie kod sql
     //czyli nie przejdzie name= "RObert)'; DROP TABLE USERS"
+
+
+
     const sqlRequest = "INSERT INTO users (name, email) VALUES (?,?)"
 
     db.run(sqlRequest, [name, email], (err) => {
@@ -106,7 +117,7 @@ app.get("/users/:id", (req, res) => //braowało id
     const sqlRequest = "SELECT * FROM users WHERE id = ?"
 
     //db get pobiera jeden rekord- pierwszy, reszta ingorowana - pojedynczy uzytkownik z row
-    db.get(sqlRequest, [id], (err, row) => { //literowka z rows na row
+    db.get(sqlRequest, [id], (err, row) => {
         if (err) {
             return res.status(500).json
                 ({

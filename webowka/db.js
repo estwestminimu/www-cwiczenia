@@ -11,6 +11,9 @@ const db = new sqlite3.Database("./users.db", (err) => {
     }
 });
 
+//serialize wykonywanie zapytan sekwencyjnie 
+//// Operacje mogą wykonać się w LOSOWEJ kolejności!
+
 db.serialize(() => {
   //  ACID - przeczytac
   db.run(`
