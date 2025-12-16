@@ -3,6 +3,7 @@ async function loadUsers() {
 
     //json odpowiedzi
     //słownik
+    //res.json() zwraca Promise, który musi zostać rozwiązany, aby otrzymać obiekt JavaScript (tablicę użytkowników).
     const users = await res.json();
 
     const list = document.getElementById("userList");
